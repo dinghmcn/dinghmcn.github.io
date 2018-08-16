@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://dinghmcn.github.io/2018/01/22/ThreadLifeCycleInJava/</loc>
+    
+    <lastmod>2018-08-16T06:04:05.184Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://dinghmcn.github.io/2018/01/23/ThreadWaitAndNotify/</loc>
     
-    <lastmod>2018-08-16T03:34:42.468Z</lastmod>
+    <lastmod>2018-08-16T03:40:30.768Z</lastmod>
     
   </url>
   
@@ -19,13 +26,6 @@
     <loc>https://dinghmcn.github.io/2018/01/23/ThreadSafetyInJava/</loc>
     
     <lastmod>2018-08-16T03:34:29.621Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://dinghmcn.github.io/2018/01/22/ThreadLifeCycleInJava/</loc>
-    
-    <lastmod>2018-08-16T03:34:21.531Z</lastmod>
     
   </url>
   
