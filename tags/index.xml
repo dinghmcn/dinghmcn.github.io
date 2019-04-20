@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tags on Hugo tranquilpeak theme</title>
-    <link>https://example.org/tags/</link>
-    <description>Recent content in Tags on Hugo tranquilpeak theme</description>
+    <title>Tags on dinghmcn&#39;s blog</title>
+    <link>https://dinghmcn.github.io/tags/</link>
+    <description>Recent content in Tags on dinghmcn&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 17 Nov 2018 00:00:00 +0800</lastBuildDate>
     
-	<atom:link href="https://example.org/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://dinghmcn.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Android</title>
+      <link>https://dinghmcn.github.io/tags/android/</link>
+      <pubDate>Sat, 17 Nov 2018 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/tags/android/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Systemserver</title>
+      <link>https://dinghmcn.github.io/tags/systemserver/</link>
+      <pubDate>Sat, 17 Nov 2018 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/tags/systemserver/</guid>
+      <description></description>
+    </item>
     
   </channel>
 </rss>

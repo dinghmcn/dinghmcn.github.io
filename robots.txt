@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://dinghmcn.github.io/sitemap.xml

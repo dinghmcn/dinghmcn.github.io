@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Battery Service - dinghmcn&#39;s blog</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="dinghmcn" />
+  <meta name="description" content="会简单的介绍 BatteryService ，重点会放在 BatteryStatsService 的源码分析上。
+
+" />
+
+  <meta name="keywords" content="Java, Android, C&#43;&#43;" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.48" />
+
+
+<link rel="canonical" href="https://dinghmcn.github.io/post/batteryservice/" />
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.b1679e57eeea2063968c2297b106a28a5f8588a822aaea6ec3e802853d3ee8cb.css" integrity="sha256-sWeeV&#43;7qIGOWjCKXsQaiil&#43;FiKgiqupuw&#43;gChT0&#43;6Ms=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Battery Service" />
+<meta property="og:description" content="会简单的介绍 BatteryService ，重点会放在 BatteryStatsService 的源码分析上。
+
+" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://dinghmcn.github.io/post/batteryservice/" /><meta property="article:published_time" content="2018-11-17T00:00:00&#43;08:00"/>
+<meta property="article:modified_time" content="2019-04-20T11:47:47&#43;08:00"/>
+<meta itemprop="name" content="Battery Service">
+<meta itemprop="description" content="会简单的介绍 BatteryService ，重点会放在 BatteryStatsService 的源码分析上。
+
+">
+
+
+<meta itemprop="datePublished" content="2018-11-17T00:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-11-17T00:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="3308">
+
+
+
+<meta itemprop="keywords" content="Android,SystemServer," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Battery Service"/>
+<meta name="twitter:description" content="会简单的介绍 BatteryService ，重点会放在 BatteryStatsService 的源码分析上。
+
+"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">dinghmcn&#39;s blog</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://dinghmcn.github.io/">主页</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://dinghmcn.github.io/post/">归档</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://dinghmcn.github.io/tags/">标签</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://dinghmcn.github.io/categories/">分类</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://dinghmcn.github.io/about/">关于</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://dinghmcn.github.io/index.xml">订阅</a>
+          
+        
+      </li>
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      dinghmcn&#39;s blog
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://dinghmcn.github.io/">主页</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://dinghmcn.github.io/post/">归档</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://dinghmcn.github.io/tags/">标签</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://dinghmcn.github.io/categories/">分类</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://dinghmcn.github.io/about/">关于</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://dinghmcn.github.io/index.xml">订阅</a>
+          
+
+        
+
+      </li>
+    
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Battery Service</h1>
+      
+      <div class="post-meta">
+        <time datetime="2018-11-17" class="post-time">
+          2018-11-17
+        </time>
+        <div class="post-category">
+            <a href="https://dinghmcn.github.io/categories/android0/"> Android0 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3308 字 </span>
+          <span class="more-meta"> 预计阅读 7 分钟 </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#batteryservice">BatteryService</a>
+<ul>
+<li><a href="#构造方法">构造方法</a></li>
+<li><a href="#启动">启动：</a>
+<ul>
+<li><a href="#onstart"><code>onStart()</code></a></li>
+<li><a href="#onbootphase"><code>onBootPhase()</code></a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>会简单的介绍 <code>BatteryService</code> ，重点会放在 <code>BatteryStatsService</code> 的源码分析上。</p>
+
+<p></p>
+
+<h2 id="batteryservice">BatteryService</h2>
+
+<p><code>BatteryService</code> 的启动流程和 <code>PowerManagerService</code> 差不多，其实大多数系统服务启动流程都大同小异，都是有  <code>SystemServer</code> 启动并运行在其进程中。我们直接从 <code>BatteryService</code> 的构造方法开始：</p>
+
+<h3 id="构造方法">构造方法</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">BatteryService</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+
+    <span class="n">mContext</span> <span class="o">=</span> <span class="n">context</span><span class="o">;</span>
+    <span class="c1">// 异步处理
+</span><span class="c1"></span>    <span class="n">mHandler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Handler</span><span class="o">(</span><span class="kc">true</span> <span class="cm">/*async*/</span><span class="o">);</span>
+    <span class="c1">// Led 是内部类但构造注入了  LightsManager 用于管理  Led 灯（键盘灯、通知灯等）
+</span><span class="c1"></span>    <span class="n">mLed</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Led</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">getLocalService</span><span class="o">(</span><span class="n">LightsManager</span><span class="o">.</span><span class="na">class</span><span class="o">));</span>
+    <span class="c1">// 获取  BatterStatsService 用于电量统计
+</span><span class="c1"></span>    <span class="n">mBatteryStats</span> <span class="o">=</span> <span class="n">BatteryStatsService</span><span class="o">.</span><span class="na">getService</span><span class="o">();</span>
+    <span class="c1">// 获取  ActivityManagerInternal 用于管理  Activity 信息，
+</span><span class="c1"></span>    <span class="c1">// 和  PowerManagerInternal 一样是单例的并且属于  SystemServer 内部管理工具不能用于外部,
+</span><span class="c1"></span>    <span class="n">mActivityManagerInternal</span> <span class="o">=</span> <span class="n">LocalServices</span><span class="o">.</span><span class="na">getService</span><span class="o">(</span><span class="n">ActivityManagerInternal</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="c1">// 危急电量，低于此电量将自动关机
+</span><span class="c1"></span>    <span class="n">mCriticalBatteryLevel</span> <span class="o">=</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getResources</span><span class="o">().</span><span class="na">getInteger</span><span class="o">(</span>
+                                                               <span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">integer</span><span class="o">.</span><span class="na">config_criticalBatteryWarningLevel</span><span class="o">);</span>
+    <span class="c1">// 低电量，低于此电量将发出警告（弹窗、通知、状态栏电池图标变红等）
+</span><span class="c1"></span>    <span class="n">mLowBatteryWarningLevel</span> <span class="o">=</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getResources</span><span class="o">().</span><span class="na">getInteger</span><span class="o">(</span>
+                                                                 <span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">integer</span><span class="o">.</span><span class="na">config_lowBatteryWarningLevel</span><span class="o">);</span>
+    <span class="c1">// 脱离低电量间隔，由低电量升高多少电量后取消低电量警告
+</span><span class="c1"></span>    <span class="n">mLowBatteryCloseWarningLevel</span> <span class="o">=</span> <span class="n">mLowBatteryWarningLevel</span> <span class="o">+</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getResources</span><span class="o">().</span><span class="na">getInteger</span><span class="o">(</span>
+                                                                                                <span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">integer</span><span class="o">.</span><span class="na">config_lowBatteryCloseWarningBump</span><span class="o">);</span>
+    <span class="c1">// 紧急温度，电池温度高于此温度将强制关机（可能会直接断电关机）
+</span><span class="c1"></span>    <span class="n">mShutdownBatteryTemperature</span> <span class="o">=</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getResources</span><span class="o">().</span><span class="na">getInteger</span><span class="o">(</span>
+                                                                     <span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">integer</span><span class="o">.</span><span class="na">config_shutdownBatteryTemperature</span><span class="o">);</span>
+    <span class="c1">// 电池电量事件队列
+</span><span class="c1"></span>    <span class="n">mBatteryLevelsEventQueue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayDeque</span><span class="o">&lt;&gt;();</span>
+    <span class="c1">// 记录日志
+</span><span class="c1"></span>    <span class="n">mMetricsLogger</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MetricsLogger</span><span class="o">();</span>
+
+    <span class="c1">// watch for invalid charger messages if the invalid_charger switch exists
+</span><span class="c1"></span>    <span class="c1">// 监测无效充电器
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(</span><span class="k">new</span> <span class="n">File</span><span class="o">(</span><span class="s">&#34;/sys/devices/virtual/switch/invalid_charger/state&#34;</span><span class="o">).</span><span class="na">exists</span><span class="o">())</span> <span class="o">{</span>
+        <span class="n">UEventObserver</span> <span class="n">invalidChargerObserver</span> <span class="o">=</span> <span class="k">new</span> <span class="n">UEventObserver</span><span class="o">()</span> <span class="o">{</span>
+                <span class="nd">@Override</span>
+                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onUEvent</span><span class="o">(</span><span class="n">UEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="kd">final</span> <span class="kt">int</span> <span class="n">invalidCharger</span> <span class="o">=</span> <span class="s">&#34;1&#34;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&#34;SWITCH_STATE&#34;</span><span class="o">))</span> <span class="o">?</span> <span class="n">1</span> <span class="o">:</span> <span class="n">0</span><span class="o">;</span>
+                    <span class="kd">synchronized</span> <span class="o">(</span><span class="n">mLock</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">mInvalidCharger</span> <span class="o">!=</span> <span class="n">invalidCharger</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">mInvalidCharger</span> <span class="o">=</span> <span class="n">invalidCharger</span><span class="o">;</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">};</span>
+        <span class="n">invalidChargerObserver</span><span class="o">.</span><span class="na">startObserving</span><span class="o">(</span>
+                                              <span class="s">&#34;DEVPATH=/devices/virtual/switch/invalid_charger&#34;</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="启动">启动：</h3>
+
+<h4 id="onstart"><code>onStart()</code></h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onStart</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">registerHealthCallback</span><span class="o">();</span>
+    <span class="c1">// 将自己的  Binder 服务端注册到  ServiceManager，注意这里没有使用  AIDL。见  1
+</span><span class="c1"></span>    <span class="n">mBinderService</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BinderService</span><span class="o">();</span>
+    <span class="n">publishBinderService</span><span class="o">(</span><span class="s">&#34;battery&#34;</span><span class="o">,</span> <span class="n">mBinderService</span><span class="o">);</span>
+    <span class="c1">// 注册  BatteryPropertiesRegistrar 服务到  ServiceManager，这个类似  PowerManagerService 是用  AIDL 实现的
+</span><span class="c1"></span>    <span class="c1">// 它只实现了在  BatteryManager 中使用的  getProperty
+</span><span class="c1"></span>    <span class="n">mBatteryPropertiesRegistrar</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BatteryPropertiesRegistrar</span><span class="o">();</span>
+    <span class="n">publishBinderService</span><span class="o">(</span><span class="s">&#34;batteryproperties&#34;</span><span class="o">,</span> <span class="n">mBatteryPropertiesRegistrar</span><span class="o">);</span>
+    <span class="c1">// 这个类似  PowerManagerServic
+</span><span class="c1"></span>    <span class="n">publishLocalService</span><span class="o">(</span><span class="n">BatteryManagerInternal</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">LocalService</span><span class="o">());</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<ol>
+<li><p><code>registerHealthCallback()</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">registerHealthCallback</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">traceBegin</span><span class="o">(</span><span class="s">&#34;HealthInitWrapper&#34;</span><span class="o">);</span>
+    <span class="c1">// 构造函数是空的，应该在构造方法后调用  init() 方法，出于测试目的不在构造方法中调用  init() 方法
+</span><span class="c1"></span>    <span class="n">mHealthServiceWrapper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HealthServiceWrapper</span><span class="o">();</span>
+    <span class="n">mHealthHalCallback</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HealthHalCallback</span><span class="o">();</span>
+    <span class="c1">// IHealth is lazily retrieved.
+</span><span class="c1"></span>    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">mHealthServiceWrapper</span><span class="o">.</span><span class="na">init</span><span class="o">(</span><span class="n">mHealthHalCallback</span><span class="o">,</span>
+                                   <span class="k">new</span> <span class="n">HealthServiceWrapper</span><span class="o">.</span><span class="na">IServiceManagerSupplier</span><span class="o">()</span> <span class="o">{},</span>
+                                   <span class="k">new</span> <span class="n">HealthServiceWrapper</span><span class="o">.</span><span class="na">IHealthSupplier</span><span class="o">()</span> <span class="o">{});</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+        <span class="n">traceEnd</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="n">traceBegin</span><span class="o">(</span><span class="s">&#34;HealthInitWaitUpdate&#34;</span><span class="o">);</span>
+    <span class="c1">// init register for new service notifications, and IServiceManager should return the
+</span><span class="c1"></span>    <span class="c1">// existing service in a near future. Wait for this.update() to instantiate
+</span><span class="c1"></span>    <span class="c1">// the initial mHealthInfo.
+</span><span class="c1"></span>    <span class="c1">// 等待  mHealthInfo 初始化
+</span><span class="c1"></span>    <span class="kt">long</span> <span class="n">beforeWait</span> <span class="o">=</span> <span class="n">SystemClock</span><span class="o">.</span><span class="na">uptimeMillis</span><span class="o">();</span>
+    <span class="kd">synchronized</span> <span class="o">(</span><span class="n">mLock</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">mHealthInfo</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">Slog</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&#34;health: Waited &#34;</span> <span class="o">+</span> <span class="o">(</span><span class="n">SystemClock</span><span class="o">.</span><span class="na">uptimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">beforeWait</span><span class="o">)</span> <span class="o">+</span>
+                   <span class="s">&#34;ms for callbacks. Waiting another &#34;</span> <span class="o">+</span> <span class="n">HEALTH_HAL_WAIT_MS</span> <span class="o">+</span> <span class="s">&#34; ms...&#34;</span><span class="o">);</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">mLock</span><span class="o">.</span><span class="na">wait</span><span class="o">(</span><span class="n">HEALTH_HAL_WAIT_MS</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="n">traceEnd</span><span class="o">();</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<ol>
+<li><p><code>HealthServiceWrapper.init()</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">Callback</span> <span class="n">callback</span><span class="o">,</span>
+          <span class="n">IServiceManagerSupplier</span> <span class="n">managerSupplier</span><span class="o">,</span>
+          <span class="n">IHealthSupplier</span> <span class="n">healthSupplier</span><span class="o">)</span>
+    <span class="kd">throws</span> <span class="n">RemoteException</span><span class="o">,</span> <span class="n">NoSuchElementException</span><span class="o">,</span> <span class="n">NullPointerException</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">callback</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">managerSupplier</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">healthSupplier</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="n">NullPointerException</span><span class="o">();</span>
+
+    <span class="n">IServiceManager</span> <span class="n">manager</span><span class="o">;</span>
+
+    <span class="n">mCallback</span> <span class="o">=</span> <span class="n">callback</span><span class="o">;</span>
+    <span class="n">mHealthSupplier</span> <span class="o">=</span> <span class="n">healthSupplier</span><span class="o">;</span>
+
+    <span class="c1">// Initialize mLastService and call callback for the first time (in init thread)
+</span><span class="c1"></span>    <span class="c1">// 获取  IHealth 服务
+</span><span class="c1"></span>    <span class="n">IHealth</span> <span class="n">newService</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">name</span> <span class="o">:</span> <span class="n">sAllInstances</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">traceBegin</span><span class="o">(</span><span class="s">&#34;HealthInitGetService_&#34;</span> <span class="o">+</span> <span class="n">name</span><span class="o">);</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">newService</span> <span class="o">=</span> <span class="n">healthSupplier</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">NoSuchElementException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+            <span class="cm">/* ignored, handled below */</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">traceEnd</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">newService</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">mInstanceName</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+            <span class="n">mLastService</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">newService</span><span class="o">);</span>
+            <span class="k">break</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">mInstanceName</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">newService</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="n">NoSuchElementException</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span>
+                                                       <span class="s">&#34;No IHealth service instance among %s is available. Perhaps no permission?&#34;</span><span class="o">,</span>
+                                                       <span class="n">sAllInstances</span><span class="o">.</span><span class="na">toString</span><span class="o">()));</span>
+    <span class="o">}</span>
+    <span class="c1">// 回调注册
+</span><span class="c1"></span>    <span class="n">mCallback</span><span class="o">.</span><span class="na">onRegistration</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="n">newService</span><span class="o">,</span> <span class="n">mInstanceName</span><span class="o">);</span>
+
+    <span class="c1">// Register for future service registrations
+</span><span class="c1"></span>    <span class="n">traceBegin</span><span class="o">(</span><span class="s">&#34;HealthInitRegisterNotification&#34;</span><span class="o">);</span>
+    <span class="n">mHandlerThread</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">managerSupplier</span><span class="o">.</span><span class="na">get</span><span class="o">().</span><span class="na">registerForNotifications</span><span class="o">(</span>
+                                                       <span class="n">IHealth</span><span class="o">.</span><span class="na">kInterfaceName</span><span class="o">,</span> <span class="n">mInstanceName</span><span class="o">,</span> <span class="n">mNotification</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+        <span class="n">traceEnd</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="n">Slog</span><span class="o">.</span><span class="na">i</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&#34;health: HealthServiceWrapper listening to instance &#34;</span> <span class="o">+</span> <span class="n">mInstanceName</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div></li>
+
+<li><p><code>HealthHalCallback.onRegistration()</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onRegistration</span><span class="o">(</span><span class="n">IHealth</span> <span class="n">oldService</span><span class="o">,</span> <span class="n">IHealth</span> <span class="n">newService</span><span class="o">,</span>
+                                     <span class="n">String</span> <span class="n">instance</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">newService</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span><span class="o">;</span>
+
+    <span class="n">traceBegin</span><span class="o">(</span><span class="s">&#34;HealthUnregisterCallback&#34;</span><span class="o">);</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">oldService</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// 注销旧服务
+</span><span class="c1"></span>            <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">oldService</span><span class="o">.</span><span class="na">unregisterCallback</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">r</span> <span class="o">!=</span> <span class="n">Result</span><span class="o">.</span><span class="na">SUCCESS</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">Slog</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&#34;health: cannot unregister previous callback: &#34;</span> <span class="o">+</span>
+                       <span class="n">Result</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">r</span><span class="o">));</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">RemoteException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Slog</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&#34;health: cannot unregister previous callback (transaction error): &#34;</span>
+<span class="err">​</span>               <span class="o">+</span> <span class="n">ex</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+        <span class="n">traceEnd</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="n">traceBegin</span><span class="o">(</span><span class="s">&#34;HealthRegisterCallback&#34;</span><span class="o">);</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="c1">// IHealth 注册回调
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">newService</span><span class="o">.</span><span class="na">registerCallback</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">r</span> <span class="o">!=</span> <span class="n">Result</span><span class="o">.</span><span class="na">SUCCESS</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">Slog</span><span class="o">.</span><span class="na">w</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&#34;health: cannot register callback: &#34;</span> <span class="o">+</span> <span class="n">Result</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">r</span><span class="o">));</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">// registerCallback does NOT guarantee that update is called
+</span><span class="c1"></span>        <span class="c1">// immediately, so request a manual update here.
+</span><span class="c1"></span>        <span class="c1">//手动更新，会进入  hal 层，最终会回调  healthInfoChanged 方法
+</span><span class="c1"></span>        <span class="n">newService</span><span class="o">.</span><span class="na">update</span><span class="o">();</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">RemoteException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">Slog</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="n">TAG</span><span class="o">,</span> <span class="s">&#34;health: cannot register callback (transaction error): &#34;</span>
+<span class="err">​</span>               <span class="o">+</span> <span class="n">ex</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+        <span class="n">traceEnd</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div></li>
+
+<li><p><code>HealthHalCallback.healthInfoChanged()</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">healthInfoChanged</span><span class="o">(</span><span class="n">android</span><span class="o">.</span><span class="na">hardware</span><span class="o">.</span><span class="na">health</span><span class="o">.</span><span class="na">V2_0</span><span class="o">.</span><span class="na">HealthInfo</span> <span class="n">props</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">BatteryService</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">props</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div></li>
+
+<li><p><code>update()</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">update</span><span class="o">(</span><span class="n">android</span><span class="o">.</span><span class="na">hardware</span><span class="o">.</span><span class="na">health</span><span class="o">.</span><span class="na">V2_0</span><span class="o">.</span><span class="na">HealthInfo</span> <span class="n">info</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">traceBegin</span><span class="o">(</span><span class="s">&#34;HealthInfoUpdate&#34;</span><span class="o">);</span>
+    <span class="kd">synchronized</span> <span class="o">(</span><span class="n">mLock</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">mUpdatesStopped</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// mUpdatesStopped 默认  false
+</span><span class="c1"></span>            <span class="n">mHealthInfo</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="na">legacy</span><span class="o">;</span>
+            <span class="c1">// Process the new values.
+</span><span class="c1"></span>            <span class="c1">// 更新电源相关信息，后面分析
+</span><span class="c1"></span>            <span class="n">processValuesLocked</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+            <span class="c1">// 唤醒其它线程
+</span><span class="c1"></span>            <span class="n">mLock</span><span class="o">.</span><span class="na">notifyAll</span><span class="o">();</span> <span class="c1">// for any waiters on new info
+</span><span class="c1"></span>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">copy</span><span class="o">(</span><span class="n">mLastHealthInfo</span><span class="o">,</span> <span class="n">info</span><span class="o">.</span><span class="na">legacy</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="n">traceEnd</span><span class="o">();</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol></li>
+
+<li><p><code>BinderService()</code>
+<code>BatteryService</code> 服务端远程调用流程： <code>BinderService.onShellCommadnd()</code> -&gt; <code>Shell.exec()</code> -&gt; <code>ShellCommand.exec()</code> -&gt; <code>Shell.onCommand()</code> -&gt; <code>onShellCommand()</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">BinderService</span> <span class="kd">extends</span> <span class="n">Binder</span> <span class="o">{</span>
+    <span class="nd">@Override</span> <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">dump</span><span class="o">(</span><span class="n">FileDescriptor</span> <span class="n">fd</span><span class="o">,</span> <span class="n">PrintWriter</span> <span class="n">pw</span><span class="o">,</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">DumpUtils</span><span class="o">.</span><span class="na">checkDumpPermission</span><span class="o">(</span><span class="n">mContext</span><span class="o">,</span> <span class="n">TAG</span><span class="o">,</span> <span class="n">pw</span><span class="o">))</span> <span class="k">return</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span> <span class="o">&gt;</span> <span class="n">0</span> <span class="o">&amp;&amp;</span> <span class="s">&#34;--proto&#34;</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="n">0</span><span class="o">]))</span> <span class="o">{</span>
+            <span class="n">dumpProto</span><span class="o">(</span><span class="n">fd</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">dumpInternal</span><span class="o">(</span><span class="n">fd</span><span class="o">,</span> <span class="n">pw</span><span class="o">,</span> <span class="n">args</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onShellCommand</span><span class="o">(</span><span class="n">FileDescriptor</span> <span class="n">in</span><span class="o">,</span> <span class="n">FileDescriptor</span> <span class="n">out</span><span class="o">,</span>
+                                         <span class="n">FileDescriptor</span> <span class="n">err</span><span class="o">,</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">,</span> <span class="n">ShellCallback</span> <span class="n">callback</span><span class="o">,</span>
+                                         <span class="n">ResultReceiver</span> <span class="n">resultReceiver</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">(</span><span class="k">new</span> <span class="n">Shell</span><span class="o">()).</span><span class="na">exec</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">in</span><span class="o">,</span> <span class="n">out</span><span class="o">,</span> <span class="n">err</span><span class="o">,</span> <span class="n">args</span><span class="o">,</span> <span class="n">callback</span><span class="o">,</span> <span class="n">resultReceiver</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<ol>
+<li><p><code>Shell()</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">Shell</span> <span class="kd">extends</span> <span class="n">ShellCommand</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">onCommand</span><span class="o">(</span><span class="n">String</span> <span class="n">cmd</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">onShellCommand</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">cmd</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onHelp</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">PrintWriter</span> <span class="n">pw</span> <span class="o">=</span> <span class="n">getOutPrintWriter</span><span class="o">();</span>
+        <span class="n">dumpHelp</span><span class="o">(</span><span class="n">pw</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div></li>
+
+<li><p><code>ShellCommand.exec()</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">int</span> <span class="nf">exec</span><span class="o">(</span><span class="n">Binder</span> <span class="n">target</span><span class="o">,</span> <span class="n">FileDescriptor</span> <span class="n">in</span><span class="o">,</span> <span class="n">FileDescriptor</span> <span class="n">out</span><span class="o">,</span> <span class="n">FileDescriptor</span> <span class="n">err</span><span class="o">,</span>
+                <span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">,</span> <span class="n">ShellCallback</span> <span class="n">callback</span><span class="o">,</span> <span class="n">ResultReceiver</span> <span class="n">resultReceiver</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">cmd</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">start</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">args</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">args</span><span class="o">.</span><span class="na">length</span> <span class="o">&gt;</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">args</span><span class="o">[</span><span class="n">0</span><span class="o">];</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">1</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="c1">// 初始化
+</span><span class="c1"></span>    <span class="n">init</span><span class="o">(</span><span class="n">target</span><span class="o">,</span> <span class="n">in</span><span class="o">,</span> <span class="n">out</span><span class="o">,</span> <span class="n">err</span><span class="o">,</span> <span class="n">args</span><span class="o">,</span> <span class="n">callback</span><span class="o">,</span> <span class="n">start</span><span class="o">);</span>
+    <span class="n">mCmd</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">;</span>
+    <span class="n">mResultReceiver</span> <span class="o">=</span> <span class="n">resultReceiver</span><span class="o">;</span>
+
+    <span class="kt">int</span> <span class="n">res</span> <span class="o">=</span> <span class="o">-</span><span class="n">1</span><span class="o">;</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">onCommand</span><span class="o">(</span><span class="n">mCmd</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">SecurityException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">mOutPrintWriter</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">mOutPrintWriter</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">mErrPrintWriter</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">mErrPrintWriter</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">mResultReceiver</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">mResultReceiver</span><span class="o">.</span><span class="na">send</span><span class="o">(</span><span class="n">res</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">res</span><span class="o">;</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol></li>
+</ol>
+
+<h4 id="onbootphase"><code>onBootPhase()</code></h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">onBootPhase</span><span class="o">(</span><span class="kt">int</span> <span class="n">phase</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">phase</span> <span class="o">==</span> <span class="n">PHASE_ACTIVITY_MANAGER_READY</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// check our power situation now that it is safe to display the shutdown dialog.
+</span><span class="c1"></span>        <span class="kd">synchronized</span> <span class="o">(</span><span class="n">mLock</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">ContentObserver</span> <span class="n">obs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ContentObserver</span><span class="o">(</span><span class="n">mHandler</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="nd">@Override</span>
+                    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onChange</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">selfChange</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="kd">synchronized</span> <span class="o">(</span><span class="n">mLock</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">updateBatteryWarningLevelLocked</span><span class="o">();</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                <span class="o">};</span>
+            <span class="kd">final</span> <span class="n">ContentResolver</span> <span class="n">resolver</span> <span class="o">=</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getContentResolver</span><span class="o">();</span>
+            <span class="c1">// 监听设置中低电量值的改变
+</span><span class="c1"></span>            <span class="n">resolver</span><span class="o">.</span><span class="na">registerContentObserver</span><span class="o">(</span><span class="n">Settings</span><span class="o">.</span><span class="na">Global</span><span class="o">.</span><span class="na">getUriFor</span><span class="o">(</span><span class="n">Settings</span><span class="o">.</span><span class="na">Global</span><span class="o">.</span><span class="na">LOW_POWER_MODE_TRIGGER_LEVEL</span><span class="o">),</span>
+                                             <span class="kc">false</span><span class="o">,</span> <span class="n">obs</span><span class="o">,</span> <span class="n">UserHandle</span><span class="o">.</span><span class="na">USER_ALL</span><span class="o">);</span>
+            <span class="n">updateBatteryWarningLevelLocked</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<ol>
+<li><p><code>updateBatteryWarningLevelLocked()</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">updateBatteryWarningLevelLocked</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">final</span> <span class="n">ContentResolver</span> <span class="n">resolver</span> <span class="o">=</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getContentResolver</span><span class="o">();</span>
+    <span class="c1">// 默认低电量值
+</span><span class="c1"></span>    <span class="kt">int</span> <span class="n">defWarnLevel</span> <span class="o">=</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getResources</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">getInteger</span><span class="o">(</span><span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">integer</span><span class="o">.</span><span class="na">config_lowBatteryWarningLevel</span><span class="o">);</span>
+    <span class="c1">// 用户设置的低电量值
+</span><span class="c1"></span>    <span class="n">mLowBatteryWarningLevel</span> <span class="o">=</span> <span class="n">Settings</span><span class="o">.</span><span class="na">Global</span>
+        <span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="n">resolver</span><span class="o">,</span> <span class="n">Settings</span><span class="o">.</span><span class="na">Global</span><span class="o">.</span><span class="na">LOW_POWER_MODE_TRIGGER_LEVEL</span><span class="o">,</span> <span class="n">defWarnLevel</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">mLowBatteryWarningLevel</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">mLowBatteryWarningLevel</span> <span class="o">=</span> <span class="n">defWarnLevel</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="c1">// 低电量值不应小于危急电量值
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(</span><span class="n">mLowBatteryWarningLevel</span> <span class="o">&lt;</span> <span class="n">mCriticalBatteryLevel</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">mLowBatteryWarningLevel</span> <span class="o">=</span> <span class="n">mCriticalBatteryLevel</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="c1">// 计算出取消低电量状态的电量值
+</span><span class="c1"></span>    <span class="n">mLowBatteryCloseWarningLevel</span> <span class="o">=</span> <span class="n">mLowBatteryWarningLevel</span> <span class="o">+</span> <span class="n">mContext</span><span class="o">.</span><span class="na">getResources</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">getInteger</span><span class="o">(</span><span class="n">com</span><span class="o">.</span><span class="na">android</span><span class="o">.</span><span class="na">internal</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">integer</span><span class="o">.</span><span class="na">config_lowBatteryCloseWarningBump</span><span class="o">);</span>
+    <span class="c1">// 更新电量信息
+</span><span class="c1"></span>    <span class="n">processValuesLocked</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div></li>
+
+<li><p><code>processValuesLocked()</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span><span class="lnt">134
+</span><span class="lnt">135
+</span><span class="lnt">136
+</span><span class="lnt">137
+</span><span class="lnt">138
+</span><span class="lnt">139
+</span><span class="lnt">140
+</span><span class="lnt">141
+</span><span class="lnt">142
+</span><span class="lnt">143
+</span><span class="lnt">144
+</span><span class="lnt">145
+</span><span class="lnt">146
+</span><span class="lnt">147
+</span><span class="lnt">148
+</span><span class="lnt">149
+</span><span class="lnt">150
+</span><span class="lnt">151
+</span><span class="lnt">152
+</span><span class="lnt">153
+</span><span class="lnt">154
+</span><span class="lnt">155
+</span><span class="lnt">156
+</span><span class="lnt">157
+</span><span class="lnt">158
+</span><span class="lnt">159
+</span><span class="lnt">160
+</span><span class="lnt">161
+</span><span class="lnt">162
+</span><span class="lnt">163
+</span><span class="lnt">164
+</span><span class="lnt">165
+</span><span class="lnt">166
+</span><span class="lnt">167
+</span><span class="lnt">168
+</span><span class="lnt">169
+</span><span class="lnt">170
+</span><span class="lnt">171
+</span><span class="lnt">172
+</span><span class="lnt">173
+</span><span class="lnt">174
+</span><span class="lnt">175
+</span><span class="lnt">176
+</span><span class="lnt">177
+</span><span class="lnt">178
+</span><span class="lnt">179
+</span><span class="lnt">180
+</span><span class="lnt">181
+</span><span class="lnt">182
+</span><span class="lnt">183
+</span><span class="lnt">184
+</span><span class="lnt">185
+</span><span class="lnt">186
+</span><span class="lnt">187
+</span><span class="lnt">188
+</span><span class="lnt">189
+</span><span class="lnt">190
+</span><span class="lnt">191
+</span><span class="lnt">192
+</span><span class="lnt">193
+</span><span class="lnt">194
+</span><span class="lnt">195
+</span><span class="lnt">196
+</span><span class="lnt">197
+</span><span class="lnt">198
+</span><span class="lnt">199
+</span><span class="lnt">200
+</span><span class="lnt">201
+</span><span class="lnt">202
+</span><span class="lnt">203
+</span><span class="lnt">204
+</span><span class="lnt">205
+</span><span class="lnt">206
+</span><span class="lnt">207
+</span><span class="lnt">208
+</span><span class="lnt">209
+</span><span class="lnt">210
+</span><span class="lnt">211
+</span><span class="lnt">212
+</span><span class="lnt">213
+</span><span class="lnt">214
+</span><span class="lnt">215
+</span><span class="lnt">216
+</span><span class="lnt">217
+</span><span class="lnt">218
+</span><span class="lnt">219
+</span><span class="lnt">220
+</span><span class="lnt">221
+</span><span class="lnt">222
+</span><span class="lnt">223
+</span><span class="lnt">224
+</span><span class="lnt">225
+</span><span class="lnt">226
+</span><span class="lnt">227
+</span><span class="lnt">228
+</span><span class="lnt">229
+</span><span class="lnt">230
+</span><span class="lnt">231
+</span><span class="lnt">232
+</span><span class="lnt">233
+</span><span class="lnt">234
+</span><span class="lnt">235
+</span><span class="lnt">236
+</span><span class="lnt">237
+</span><span class="lnt">238
+</span><span class="lnt">239
+</span><span class="lnt">240
+</span><span class="lnt">241
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kt">void</span> <span class="nf">processValuesLocked</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">force</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// 默认不记录日志
+</span><span class="c1"></span>    <span class="kt">boolean</span> <span class="n">logOutlier</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="kt">long</span> <span class="n">dischargeDuration</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+    <span class="c1">// 当前电量值是否是危急电量
+</span><span class="c1"></span>    <span class="n">mBatteryLevelCritical</span> <span class="o">=</span>
+        <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryStatus</span> <span class="o">!=</span> <span class="n">BatteryManager</span><span class="o">.</span><span class="na">BATTERY_STATUS_UNKNOWN</span>
+        <span class="o">&amp;&amp;</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span> <span class="o">&lt;=</span> <span class="n">mCriticalBatteryLevel</span><span class="o">;</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">mHealthInfo</span><span class="o">.</span><span class="na">chargerAcOnline</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// AC 交流充电
+</span><span class="c1"></span>        <span class="n">mPlugType</span> <span class="o">=</span> <span class="n">BatteryManager</span><span class="o">.</span><span class="na">BATTERY_PLUGGED_AC</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">mHealthInfo</span><span class="o">.</span><span class="na">chargerUsbOnline</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// USB 充电
+</span><span class="c1"></span>        <span class="n">mPlugType</span> <span class="o">=</span> <span class="n">BatteryManager</span><span class="o">.</span><span class="na">BATTERY_PLUGGED_USB</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">mHealthInfo</span><span class="o">.</span><span class="na">chargerWirelessOnline</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 无线充电
+</span><span class="c1"></span>        <span class="n">mPlugType</span> <span class="o">=</span> <span class="n">BatteryManager</span><span class="o">.</span><span class="na">BATTERY_PLUGGED_WIRELESS</span><span class="o">;</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="c1">// 未充电
+</span><span class="c1"></span>        <span class="n">mPlugType</span> <span class="o">=</span> <span class="n">BATTERY_PLUGGED_NONE</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// Let the battery stats keep track of the current level.
+</span><span class="c1"></span>    <span class="k">try</span> <span class="o">{</span>
+        <span class="c1">// 将当前电池信息传给  BatteryStatsService 电量统计服务
+</span><span class="c1"></span>        <span class="n">mBatteryStats</span><span class="o">.</span><span class="na">setBatteryState</span><span class="o">(</span><span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryStatus</span><span class="o">,</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryHealth</span><span class="o">,</span>
+                                      <span class="n">mPlugType</span><span class="o">,</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span><span class="o">,</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryTemperature</span><span class="o">,</span>
+                                      <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryVoltage</span><span class="o">,</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryChargeCounter</span><span class="o">,</span>
+                                      <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryFullCharge</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">RemoteException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// Should never happen.
+</span><span class="c1"></span>    <span class="o">}</span>
+    <span class="c1">// 电池电量为零，且不处于充电状态，则弹出关机对话框
+</span><span class="c1"></span>    <span class="n">shutdownIfNoPowerLocked</span><span class="o">();</span>
+    <span class="c1">// 电池温度超过关机温度（默认：68°C），则弹出关机对话框
+</span><span class="c1"></span>    <span class="n">shutdownIfOverTempLocked</span><span class="o">();</span>
+    <span class="c1">// 电池信息发生改变或要求强制更新时
+</span><span class="c1"></span>    <span class="k">if</span> <span class="o">(</span><span class="n">force</span> <span class="o">||</span> <span class="o">(</span><span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryStatus</span> <span class="o">!=</span> <span class="n">mLastBatteryStatus</span> <span class="o">||</span>
+                  <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryHealth</span> <span class="o">!=</span> <span class="n">mLastBatteryHealth</span> <span class="o">||</span>
+                  <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryPresent</span> <span class="o">!=</span> <span class="n">mLastBatteryPresent</span> <span class="o">||</span>
+                  <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span> <span class="o">!=</span> <span class="n">mLastBatteryLevel</span> <span class="o">||</span>
+                  <span class="n">mPlugType</span> <span class="o">!=</span> <span class="n">mLastPlugType</span> <span class="o">||</span>
+                  <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryVoltage</span> <span class="o">!=</span> <span class="n">mLastBatteryVoltage</span> <span class="o">||</span>
+                  <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryTemperature</span> <span class="o">!=</span> <span class="n">mLastBatteryTemperature</span> <span class="o">||</span>
+                  <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">maxChargingCurrent</span> <span class="o">!=</span> <span class="n">mLastMaxChargingCurrent</span> <span class="o">||</span>
+                  <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">maxChargingVoltage</span> <span class="o">!=</span> <span class="n">mLastMaxChargingVoltage</span> <span class="o">||</span>
+                  <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryChargeCounter</span> <span class="o">!=</span> <span class="n">mLastChargeCounter</span> <span class="o">||</span>
+                  <span class="n">mInvalidCharger</span> <span class="o">!=</span> <span class="n">mLastInvalidCharger</span><span class="o">))</span> <span class="o">{</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">mPlugType</span> <span class="o">!=</span> <span class="n">mLastPlugType</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// 充电状态发生改变
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">mLastPlugType</span> <span class="o">==</span> <span class="n">BATTERY_PLUGGED_NONE</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// discharging -&gt; charging
+</span><span class="c1"></span>                <span class="c1">// 未充电 -&gt; 充电
+</span><span class="c1"></span>                <span class="c1">// 充电开始的电量和时间
+</span><span class="c1"></span>                <span class="n">mChargeStartLevel</span> <span class="o">=</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span><span class="o">;</span>
+                <span class="n">mChargeStartTime</span> <span class="o">=</span> <span class="n">SystemClock</span><span class="o">.</span><span class="na">elapsedRealtime</span><span class="o">();</span>
+                <span class="c1">// 记录日志
+</span><span class="c1"></span>                <span class="kd">final</span> <span class="n">LogMaker</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LogMaker</span><span class="o">(</span><span class="n">MetricsEvent</span><span class="o">.</span><span class="na">ACTION_CHARGE</span><span class="o">);</span>
+                <span class="n">builder</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">MetricsEvent</span><span class="o">.</span><span class="na">TYPE_ACTION</span><span class="o">);</span>
+                <span class="n">builder</span><span class="o">.</span><span class="na">addTaggedData</span><span class="o">(</span><span class="n">MetricsEvent</span><span class="o">.</span><span class="na">FIELD_PLUG_TYPE</span><span class="o">,</span> <span class="n">mPlugType</span><span class="o">);</span>
+                <span class="n">builder</span><span class="o">.</span><span class="na">addTaggedData</span><span class="o">(</span><span class="n">MetricsEvent</span><span class="o">.</span><span class="na">FIELD_BATTERY_LEVEL_START</span><span class="o">,</span>
+                                      <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span><span class="o">);</span>
+                <span class="n">mMetricsLogger</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">builder</span><span class="o">);</span>
+
+                <span class="c1">// There&#39;s no value in this data unless we&#39;ve discharged at least once and the
+</span><span class="c1"></span>                <span class="c1">// battery level has changed; so don&#39;t log until it does.
+</span><span class="c1"></span>                <span class="c1">// 在至少有过一次未充电状态并且电量有改变前，记录日志是无意义的，所以在此之后才开始记录日志
+</span><span class="c1"></span>                <span class="k">if</span> <span class="o">(</span><span class="n">mDischargeStartTime</span> <span class="o">!=</span> <span class="n">0</span> <span class="o">&amp;&amp;</span> <span class="n">mDischargeStartLevel</span> <span class="o">!=</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">dischargeDuration</span> <span class="o">=</span> <span class="n">SystemClock</span><span class="o">.</span><span class="na">elapsedRealtime</span><span class="o">()</span> <span class="o">-</span> <span class="n">mDischargeStartTime</span><span class="o">;</span>
+                    <span class="n">logOutlier</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                    <span class="n">EventLog</span><span class="o">.</span><span class="na">writeEvent</span><span class="o">(</span><span class="n">EventLogTags</span><span class="o">.</span><span class="na">BATTERY_DISCHARGE</span><span class="o">,</span> <span class="n">dischargeDuration</span><span class="o">,</span>
+                                        <span class="n">mDischargeStartLevel</span><span class="o">,</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span><span class="o">);</span>
+                    <span class="c1">// make sure we see a discharge event before logging again
+</span><span class="c1"></span>                    <span class="c1">// 再次确保在记录日志钱有过未充电状态
+</span><span class="c1"></span>                    <span class="n">mDischargeStartTime</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">mPlugType</span> <span class="o">==</span> <span class="n">BATTERY_PLUGGED_NONE</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// charging -&gt; discharging or we just powered up
+</span><span class="c1"></span>                <span class="c1">// 充电 -&gt; 未充电
+</span><span class="c1"></span>                <span class="n">mDischargeStartTime</span> <span class="o">=</span> <span class="n">SystemClock</span><span class="o">.</span><span class="na">elapsedRealtime</span><span class="o">();</span>
+                <span class="n">mDischargeStartLevel</span> <span class="o">=</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span><span class="o">;</span>
+
+                <span class="kt">long</span> <span class="n">chargeDuration</span> <span class="o">=</span> <span class="n">SystemClock</span><span class="o">.</span><span class="na">elapsedRealtime</span><span class="o">()</span> <span class="o">-</span> <span class="n">mChargeStartTime</span><span class="o">;</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">mChargeStartTime</span> <span class="o">!=</span> <span class="n">0</span> <span class="o">&amp;&amp;</span> <span class="n">chargeDuration</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="kd">final</span> <span class="n">LogMaker</span> <span class="n">builder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LogMaker</span><span class="o">(</span><span class="n">MetricsEvent</span><span class="o">.</span><span class="na">ACTION_CHARGE</span><span class="o">);</span>
+                    <span class="n">builder</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">MetricsEvent</span><span class="o">.</span><span class="na">TYPE_DISMISS</span><span class="o">);</span>
+                    <span class="n">builder</span><span class="o">.</span><span class="na">addTaggedData</span><span class="o">(</span><span class="n">MetricsEvent</span><span class="o">.</span><span class="na">FIELD_PLUG_TYPE</span><span class="o">,</span> <span class="n">mLastPlugType</span><span class="o">);</span>
+                    <span class="n">builder</span><span class="o">.</span><span class="na">addTaggedData</span><span class="o">(</span><span class="n">MetricsEvent</span><span class="o">.</span><span class="na">FIELD_CHARGING_DURATION_MILLIS</span><span class="o">,</span>
+                                          <span class="n">chargeDuration</span><span class="o">);</span>
+                    <span class="n">builder</span><span class="o">.</span><span class="na">addTaggedData</span><span class="o">(</span><span class="n">MetricsEvent</span><span class="o">.</span><span class="na">FIELD_BATTERY_LEVEL_START</span><span class="o">,</span>
+                                          <span class="n">mChargeStartLevel</span><span class="o">);</span>
+                    <span class="n">builder</span><span class="o">.</span><span class="na">addTaggedData</span><span class="o">(</span><span class="n">MetricsEvent</span><span class="o">.</span><span class="na">FIELD_BATTERY_LEVEL_END</span><span class="o">,</span>
+                                          <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span><span class="o">);</span>
+                    <span class="n">mMetricsLogger</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">builder</span><span class="o">);</span>
+                <span class="o">}</span>
+                <span class="n">mChargeStartTime</span> <span class="o">=</span> <span class="n">0</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="c1">// 记录电池状态信息
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryStatus</span> <span class="o">!=</span> <span class="n">mLastBatteryStatus</span> <span class="o">||</span>
+            <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryHealth</span> <span class="o">!=</span> <span class="n">mLastBatteryHealth</span> <span class="o">||</span>
+            <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryPresent</span> <span class="o">!=</span> <span class="n">mLastBatteryPresent</span> <span class="o">||</span>
+            <span class="n">mPlugType</span> <span class="o">!=</span> <span class="n">mLastPlugType</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">EventLog</span><span class="o">.</span><span class="na">writeEvent</span><span class="o">(</span><span class="n">EventLogTags</span><span class="o">.</span><span class="na">BATTERY_STATUS</span><span class="o">,</span>
+                                <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryStatus</span><span class="o">,</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryHealth</span><span class="o">,</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryPresent</span> <span class="o">?</span> <span class="n">1</span> <span class="o">:</span> <span class="n">0</span><span class="o">,</span>
+                                <span class="n">mPlugType</span><span class="o">,</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryTechnology</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="c1">// 记录电量信息
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span> <span class="o">!=</span> <span class="n">mLastBatteryLevel</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// Don&#39;t do this just from voltage or temperature changes, that is
+</span><span class="c1"></span>            <span class="c1">// too noisy.
+</span><span class="c1"></span>            <span class="n">EventLog</span><span class="o">.</span><span class="na">writeEvent</span><span class="o">(</span><span class="n">EventLogTags</span><span class="o">.</span><span class="na">BATTERY_LEVEL</span><span class="o">,</span>
+                                <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span><span class="o">,</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryVoltage</span><span class="o">,</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryTemperature</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="c1">// 电量处于危急状态并且没有充电，上次状态改变后也没处于危急电量
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">mBatteryLevelCritical</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">mLastBatteryLevelCritical</span> <span class="o">&amp;&amp;</span>
+            <span class="n">mPlugType</span> <span class="o">==</span> <span class="n">BATTERY_PLUGGED_NONE</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// We want to make sure we log discharge cycle outliers
+</span><span class="c1"></span>            <span class="c1">// if the battery is about to die.
+</span><span class="c1"></span>            <span class="c1">// 确保能记录电池即将停止工作时的日志
+</span><span class="c1"></span>            <span class="n">dischargeDuration</span> <span class="o">=</span> <span class="n">SystemClock</span><span class="o">.</span><span class="na">elapsedRealtime</span><span class="o">()</span> <span class="o">-</span> <span class="n">mDischargeStartTime</span><span class="o">;</span>
+            <span class="n">logOutlier</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="n">mBatteryLevelLow</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// Should we now switch in to low battery mode?
+</span><span class="c1"></span>            <span class="c1">// 当前不是处于低电量状态，判断是否要置于低电量状态
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">mPlugType</span> <span class="o">==</span> <span class="n">BATTERY_PLUGGED_NONE</span>
+                <span class="o">&amp;&amp;</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryStatus</span> <span class="o">!=</span>
+                <span class="n">BatteryManager</span><span class="o">.</span><span class="na">BATTERY_STATUS_UNKNOWN</span>
+                <span class="o">&amp;&amp;</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span> <span class="o">&lt;=</span> <span class="n">mLowBatteryWarningLevel</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// 当前处于未充电状态，电池状态已知，电量低于低电量值则标记为低电量
+</span><span class="c1"></span>                <span class="n">mBatteryLevelLow</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="c1">// Should we now switch out of low battery mode?
+</span><span class="c1"></span>            <span class="c1">// 当前处于低电量状态，判断是否要退出低电量状态
+</span><span class="c1"></span>            <span class="k">if</span> <span class="o">(</span><span class="n">mPlugType</span> <span class="o">!=</span> <span class="n">BATTERY_PLUGGED_NONE</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// 处于充电状态，退出低电量状态
+</span><span class="c1"></span>                <span class="n">mBatteryLevelLow</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span> <span class="o">&gt;=</span> <span class="n">mLowBatteryCloseWarningLevel</span><span class="o">)</span>  <span class="o">{</span>
+                <span class="c1">// 当前电量高于取消低电量警告值，退出低电量状态
+</span><span class="c1"></span>                <span class="n">mBatteryLevelLow</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">force</span> <span class="o">&amp;&amp;</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span> <span class="o">&gt;=</span> <span class="n">mLowBatteryWarningLevel</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// If being forced, the previous state doesn&#39;t matter, we will just
+</span><span class="c1"></span>                <span class="c1">// absolutely check to see if we are now above the warning level.
+</span><span class="c1"></span>                <span class="c1">// 如果是强制更新电池状态，则忽略之前的状态，重新检查是否高于低电量值
+</span><span class="c1"></span>                <span class="n">mBatteryLevelLow</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="c1">// 状态更新计数加一
+</span><span class="c1"></span>        <span class="n">mSequence</span><span class="o">++;</span>
+
+        <span class="c1">// Separate broadcast is sent for power connected / not connected
+</span><span class="c1"></span>        <span class="c1">// since the standard intent will not wake any applications and some
+</span><span class="c1"></span>        <span class="c1">// applications may want to have smart behavior based on this.
+</span><span class="c1"></span>        <span class="c1">// 为 连接电源/未连接电源 单独发送广播
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">mPlugType</span> <span class="o">!=</span> <span class="n">0</span> <span class="o">&amp;&amp;</span> <span class="n">mLastPlugType</span> <span class="o">==</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kd">final</span> <span class="n">Intent</span> <span class="n">statusIntent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_POWER_CONNECTED</span><span class="o">);</span>
+            <span class="n">statusIntent</span><span class="o">.</span><span class="na">setFlags</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT</span><span class="o">);</span>
+            <span class="n">statusIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">BatteryManager</span><span class="o">.</span><span class="na">EXTRA_SEQUENCE</span><span class="o">,</span> <span class="n">mSequence</span><span class="o">);</span>
+            <span class="n">mHandler</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="nd">@Override</span>
+                    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                        <span class="n">mContext</span><span class="o">.</span><span class="na">sendBroadcastAsUser</span><span class="o">(</span><span class="n">statusIntent</span><span class="o">,</span> <span class="n">UserHandle</span><span class="o">.</span><span class="na">ALL</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">});</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">mPlugType</span> <span class="o">==</span> <span class="n">0</span> <span class="o">&amp;&amp;</span> <span class="n">mLastPlugType</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kd">final</span> <span class="n">Intent</span> <span class="n">statusIntent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_POWER_DISCONNECTED</span><span class="o">);</span>
+            <span class="n">statusIntent</span><span class="o">.</span><span class="na">setFlags</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT</span><span class="o">);</span>
+            <span class="n">statusIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">BatteryManager</span><span class="o">.</span><span class="na">EXTRA_SEQUENCE</span><span class="o">,</span> <span class="n">mSequence</span><span class="o">);</span>
+            <span class="n">mHandler</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="nd">@Override</span>
+                    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                        <span class="n">mContext</span><span class="o">.</span><span class="na">sendBroadcastAsUser</span><span class="o">(</span><span class="n">statusIntent</span><span class="o">,</span> <span class="n">UserHandle</span><span class="o">.</span><span class="na">ALL</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">});</span>
+        <span class="o">}</span>
+        <span class="c1">// 发送低电量状态改变广播
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">shouldSendBatteryLowLocked</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">mSentLowBatteryBroadcast</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="kd">final</span> <span class="n">Intent</span> <span class="n">statusIntent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_BATTERY_LOW</span><span class="o">);</span>
+            <span class="n">statusIntent</span><span class="o">.</span><span class="na">setFlags</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT</span><span class="o">);</span>
+            <span class="n">statusIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">BatteryManager</span><span class="o">.</span><span class="na">EXTRA_SEQUENCE</span><span class="o">,</span> <span class="n">mSequence</span><span class="o">);</span>
+            <span class="n">mHandler</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="nd">@Override</span>
+                    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                        <span class="n">mContext</span><span class="o">.</span><span class="na">sendBroadcastAsUser</span><span class="o">(</span><span class="n">statusIntent</span><span class="o">,</span> <span class="n">UserHandle</span><span class="o">.</span><span class="na">ALL</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">});</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">mSentLowBatteryBroadcast</span> <span class="o">&amp;&amp;</span>
+                   <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span> <span class="o">&gt;=</span> <span class="n">mLowBatteryCloseWarningLevel</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">mSentLowBatteryBroadcast</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="kd">final</span> <span class="n">Intent</span> <span class="n">statusIntent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_BATTERY_OKAY</span><span class="o">);</span>
+            <span class="n">statusIntent</span><span class="o">.</span><span class="na">setFlags</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT</span><span class="o">);</span>
+            <span class="n">statusIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">BatteryManager</span><span class="o">.</span><span class="na">EXTRA_SEQUENCE</span><span class="o">,</span> <span class="n">mSequence</span><span class="o">);</span>
+            <span class="n">mHandler</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="nd">@Override</span>
+                    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                        <span class="n">mContext</span><span class="o">.</span><span class="na">sendBroadcastAsUser</span><span class="o">(</span><span class="n">statusIntent</span><span class="o">,</span> <span class="n">UserHandle</span><span class="o">.</span><span class="na">ALL</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">});</span>
+        <span class="o">}</span>
+
+        <span class="c1">// We are doing this after sending the above broadcasts, so anything processing
+</span><span class="c1"></span>        <span class="c1">// them will get the new sequence number at that point.  (See for example how testing
+</span><span class="c1"></span>        <span class="c1">// of JobScheduler&#39;s BatteryController works.)
+</span><span class="c1"></span>        <span class="c1">// 发送电池状态改变广播
+</span><span class="c1"></span>        <span class="n">sendBatteryChangedIntentLocked</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">mLastBatteryLevel</span> <span class="o">!=</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// 发送电池电量值改变广播
+</span><span class="c1"></span>            <span class="n">sendBatteryLevelChangedIntentLocked</span><span class="o">();</span>
+        <span class="o">}</span>
+
+
+        <span class="c1">// Update the battery LED
+</span><span class="c1"></span>        <span class="c1">// 更新电池通知灯状态
+</span><span class="c1"></span>        <span class="n">mLed</span><span class="o">.</span><span class="na">updateLightsLocked</span><span class="o">();</span>
+
+        <span class="c1">// This needs to be done after sendIntent() so that we get the lastest battery stats.
+</span><span class="c1"></span>        <span class="k">if</span> <span class="o">(</span><span class="n">logOutlier</span> <span class="o">&amp;&amp;</span> <span class="n">dischargeDuration</span> <span class="o">!=</span> <span class="n">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// 记录电池耗电日志
+</span><span class="c1"></span>            <span class="n">logOutlierLocked</span><span class="o">(</span><span class="n">dischargeDuration</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="c1">// 更新本地变量，记录当前电池状态
+</span><span class="c1"></span>        <span class="n">mLastBatteryStatus</span> <span class="o">=</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryStatus</span><span class="o">;</span>
+        <span class="n">mLastBatteryHealth</span> <span class="o">=</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryHealth</span><span class="o">;</span>
+        <span class="n">mLastBatteryPresent</span> <span class="o">=</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryPresent</span><span class="o">;</span>
+        <span class="n">mLastBatteryLevel</span> <span class="o">=</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryLevel</span><span class="o">;</span>
+        <span class="n">mLastPlugType</span> <span class="o">=</span> <span class="n">mPlugType</span><span class="o">;</span>
+        <span class="n">mLastBatteryVoltage</span> <span class="o">=</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryVoltage</span><span class="o">;</span>
+        <span class="n">mLastBatteryTemperature</span> <span class="o">=</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryTemperature</span><span class="o">;</span>
+        <span class="n">mLastMaxChargingCurrent</span> <span class="o">=</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">maxChargingCurrent</span><span class="o">;</span>
+        <span class="n">mLastMaxChargingVoltage</span> <span class="o">=</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">maxChargingVoltage</span><span class="o">;</span>
+        <span class="n">mLastChargeCounter</span> <span class="o">=</span> <span class="n">mHealthInfo</span><span class="o">.</span><span class="na">batteryChargeCounter</span><span class="o">;</span>
+        <span class="n">mLastBatteryLevelCritical</span> <span class="o">=</span> <span class="n">mBatteryLevelCritical</span><span class="o">;</span>
+        <span class="n">mLastInvalidCharger</span> <span class="o">=</span> <span class="n">mInvalidCharger</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">dinghmcn</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-04-20</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://dinghmcn.github.io/tags/android/">Android</a>
+          <a href="https://dinghmcn.github.io/tags/systemserver/">SystemServer</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+  
+  
+
+  
+  
+
+  
+  
+    <div class="post bg-white">
+      <script src="https://utteranc.es/client.js"
+            repo= "dinghmcn/utterances"
+            issue-term="pathname"
+            crossorigin="anonymous"
+            async>
+      </script>
+    </div>
+  
+
+  
+
+  
+
+  
+  
+    
+
+
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="mailto:dinghmcn@gmail.com" rel="me noopener" class="iconfont"
+      title="email" >
+      <svg class="icon" viewBox="0 0 1451 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M664.781909 681.472759 0 97.881301C0 3.997201 71.046997 0 71.046997 0L474.477909 0 961.649408 0 1361.641813 0C1361.641813 0 1432.688811 3.997201 1432.688811 97.881301L771.345323 681.472759C771.345323 681.472759 764.482731 685.154773 753.594283 688.65053L753.594283 688.664858C741.602731 693.493018 729.424896 695.068979 718.077952 694.839748 706.731093 695.068979 694.553173 693.493018 682.561621 688.664858L682.561621 688.65053C671.644501 685.140446 664.781909 681.472759 664.781909 681.472759L664.781909 681.472759ZM718.063616 811.603883C693.779541 811.016482 658.879232 802.205449 619.10784 767.734955 542.989056 701.759633 0 212.052267 0 212.052267L0 942.809523C0 942.809523 0 1024 83.726336 1024L682.532949 1024 753.579947 1024 1348.948139 1024C1432.688811 1024 1432.688811 942.809523 1432.688811 942.809523L1432.688811 212.052267C1432.688811 212.052267 893.138176 701.759633 817.019477 767.734955 777.248 802.205449 742.347691 811.03081 718.063616 811.603883L718.063616 811.603883Z"></path>
+</svg>
+
+    </a>
+  
+    <a href="http://github.com/dinghmcn" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://dinghmcn.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2019
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        dinghmcn
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
