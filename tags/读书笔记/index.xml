@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>读书笔记 on dinghmcn&#39;s blog</title>
+    <link>https://dinghmcn.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/</link>
+    <description>Recent content in 读书笔记 on dinghmcn&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 25 Jun 2018 00:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://dinghmcn.github.io/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>C&#43;&#43; Primer Plus 6 读书笔记</title>
+      <link>https://dinghmcn.github.io/post/c&#43;&#43;primerplus/</link>
+      <pubDate>Mon, 25 Jun 2018 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/c&#43;&#43;primerplus/</guid>
+      <description>&lt;p&gt;《C++ Primer Plus 6》读书笔记; C++是在  C 语言基础上开发的一种集面向对象编程、泛型编程和过程化编程于一体的编程语言，是C 语言的超集。本书是根据  2003 年的  ISO/ANSI C++标准编写的，并专辟一章介绍了  C++11 新增的功能。本书针对  C++初学者，书中从  C 语言基础知识开始介绍，然后在此基础上详细阐述  C++新增的特性，因此不要求读者有  C 语言方面的背景知识。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>如何阅读一本书</title>
+      <link>https://dinghmcn.github.io/post/howtoreadabook/</link>
+      <pubDate>Thu, 21 Jun 2018 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/howtoreadabook/</guid>
+      <description>&lt;p&gt;《如何阅读一本书》读书笔记; 这本书帮我就读书这件事情的思索和困惑，作了许多印证和总结。阅读的兴趣，有一种由小说类转移到非小说类的趋势。教导年轻人阅读，以最基本的阅读概念来阅读，成了最重要的教育问题。要达到阅读的所有目的，就必须在阅读不同书籍的时候，运用适当的不同速度。不是所有的书都可以用最快的速度来阅读。读得太快或太慢，都一无所获。我们的目标是要读得更好，永远更好，不过，有时候要读得慢一点，有时候要读得快一点。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

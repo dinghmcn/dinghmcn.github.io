@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SystemUI on dinghmcn&#39;s blog</title>
+    <link>https://dinghmcn.github.io/tags/systemui/</link>
+    <description>Recent content in SystemUI on dinghmcn&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 15 Apr 2019 00:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://dinghmcn.github.io/tags/systemui/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Android9.0 SystemUI SystemBars 篇 （二）</title>
+      <link>https://dinghmcn.github.io/post/systemui3/</link>
+      <pubDate>Mon, 15 Apr 2019 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/systemui3/</guid>
+      <description>&lt;p&gt;涉及状态栏、导航栏&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Android9.0 SystemUI PowerUI 篇 （二）</title>
+      <link>https://dinghmcn.github.io/post/systemui2/</link>
+      <pubDate>Thu, 07 Mar 2019 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/systemui2/</guid>
+      <description>&lt;p&gt;PowerUI 的启动流程及其功用。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Android9.0 SystemUI 简介篇 （一）</title>
+      <link>https://dinghmcn.github.io/post/systemui1/</link>
+      <pubDate>Thu, 24 Jan 2019 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/systemui1/</guid>
+      <description>&lt;p&gt;SystemUI 的启动流程及初始化并介绍其功能模块。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

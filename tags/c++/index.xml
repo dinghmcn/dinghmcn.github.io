@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>C&#43;&#43; on dinghmcn&#39;s blog</title>
+    <link>https://dinghmcn.github.io/tags/c&#43;&#43;/</link>
+    <description>Recent content in C&#43;&#43; on dinghmcn&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 25 Jun 2018 00:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://dinghmcn.github.io/tags/c++/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>C&#43;&#43; Primer Plus 6 读书笔记</title>
+      <link>https://dinghmcn.github.io/post/c&#43;&#43;primerplus/</link>
+      <pubDate>Mon, 25 Jun 2018 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/c&#43;&#43;primerplus/</guid>
+      <description>&lt;p&gt;《C++ Primer Plus 6》读书笔记; C++是在  C 语言基础上开发的一种集面向对象编程、泛型编程和过程化编程于一体的编程语言，是C 语言的超集。本书是根据  2003 年的  ISO/ANSI C++标准编写的，并专辟一章介绍了  C++11 新增的功能。本书针对  C++初学者，书中从  C 语言基础知识开始介绍，然后在此基础上详细阐述  C++新增的特性，因此不要求读者有  C 语言方面的背景知识。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

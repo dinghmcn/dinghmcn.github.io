@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Android on dinghmcn&#39;s blog</title>
+    <link>https://dinghmcn.github.io/categories/android/</link>
+    <description>Recent content in Android on dinghmcn&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 15 Apr 2019 00:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://dinghmcn.github.io/categories/android/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Android9.0 SystemUI SystemBars 篇 （二）</title>
+      <link>https://dinghmcn.github.io/post/systemui3/</link>
+      <pubDate>Mon, 15 Apr 2019 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/systemui3/</guid>
+      <description>&lt;p&gt;涉及状态栏、导航栏&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Android9.0 SystemServer 启动流程</title>
+      <link>https://dinghmcn.github.io/post/systemserver1/</link>
+      <pubDate>Tue, 12 Mar 2019 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/systemserver1/</guid>
+      <description>&lt;p&gt;Zygote 进程是  Android 系统的第一个  Java 进程(即虚拟机进程)，Zygote 是所有  Java 进程的父进程，Zygote 进程本身是由  init 进程孵化而来的。SystemServer 进程，是由  Zygote 进程  fork 而来，SystemServer 是  Zygote 孵化的第一个进程，SystemServer 负责启动和管理整个  Java framework，包含  ActivityManager，WindowManager，PackageManager，PowerManager 等服务。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Android9.0 SystemUI PowerUI 篇 （二）</title>
+      <link>https://dinghmcn.github.io/post/systemui2/</link>
+      <pubDate>Thu, 07 Mar 2019 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/systemui2/</guid>
+      <description>&lt;p&gt;PowerUI 的启动流程及其功用。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Android9.0 PackageManagerService installd 篇 （五）</title>
+      <link>https://dinghmcn.github.io/post/packagemanagerservice5/</link>
+      <pubDate>Thu, 24 Jan 2019 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/packagemanagerservice5/</guid>
+      <description>&lt;p&gt;&lt;code&gt;PackageManagerService&lt;/code&gt; 通过构造注入了一个 &lt;code&gt;Installer&lt;/code&gt; 对象， &lt;code&gt;Installer&lt;/code&gt; 是一个系统服务，可以和 &lt;code&gt;installd&lt;/code&gt; 通信，完成一些重要的工作，例如利用 &lt;code&gt;dexopt()&lt;/code&gt; 方法对  APK 文件进行 &lt;code&gt;dex&lt;/code&gt; 优化；存储空间不足时，利用 &lt;code&gt;freeCache()&lt;/code&gt; 方法清理存储空间。 接下来，我们就分析一下 &lt;code&gt;installd&lt;/code&gt; 及一些重要工作的流程。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Android9.0 SystemUI 简介篇 （一）</title>
+      <link>https://dinghmcn.github.io/post/systemui1/</link>
+      <pubDate>Thu, 24 Jan 2019 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/systemui1/</guid>
+      <description>&lt;p&gt;SystemUI 的启动流程及初始化并介绍其功能模块。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Android9.0 PackageManagerService Intent 匹配篇 （四）</title>
+      <link>https://dinghmcn.github.io/post/packagemanagerservice4/</link>
+      <pubDate>Tue, 22 Jan 2019 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/packagemanagerservice4/</guid>
+      <description>&lt;p&gt;分析通过 &lt;code&gt;Intent&lt;/code&gt; 匹配启动 &lt;code&gt;Activity&lt;/code&gt; 的过程&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Android9.0 PackageManagerService 应用安装篇 （三）</title>
+      <link>https://dinghmcn.github.io/post/packagemanagerservice3/</link>
+      <pubDate>Mon, 14 Jan 2019 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/packagemanagerservice3/</guid>
+      <description>&lt;p&gt;分析通过  APK 文件安装应用的过程&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Android9.0 PackageManagerService 构造篇 （二）</title>
+      <link>https://dinghmcn.github.io/post/packagemanagerservice2/</link>
+      <pubDate>Mon, 14 Jan 2019 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/packagemanagerservice2/</guid>
+      <description>&lt;p&gt;分析 &lt;code&gt;PackageManagerService&lt;/code&gt; 的构造方法，主要是扫描已存在的应用并建立应用信息库用于查询&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Android9.0 PackageManagerService 简介篇 （一）</title>
+      <link>https://dinghmcn.github.io/post/packagemanagerservice1/</link>
+      <pubDate>Thu, 22 Nov 2018 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/packagemanagerservice1/</guid>
+      <description>&lt;p&gt;会介绍 &lt;code&gt;PackageInstaller&lt;/code&gt; &lt;code&gt;PackageManager&lt;/code&gt; &lt;code&gt;PackageManagerService&lt;/code&gt; 之间的联系及 &lt;code&gt;PackageManagerService&lt;/code&gt; 的启动过程&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>PackageManagerService</title>
+      <link>https://dinghmcn.github.io/post/packagemanagerservice/</link>
+      <pubDate>Thu, 22 Nov 2018 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/packagemanagerservice/</guid>
+      <description>&lt;p&gt;会涉及 &lt;code&gt;PackageInstaller&lt;/code&gt; &lt;code&gt;PackageManager&lt;/code&gt; &lt;code&gt;PackageManagerService&lt;/code&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Battery Service</title>
+      <link>https://dinghmcn.github.io/post/batteryservice/</link>
+      <pubDate>Sat, 17 Nov 2018 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/batteryservice/</guid>
+      <description>&lt;p&gt;会简单的介绍 &lt;code&gt;BatteryService&lt;/code&gt; ，重点会放在 &lt;code&gt;BatteryStatsService&lt;/code&gt; 的源码分析上。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Interview</title>
+      <link>https://dinghmcn.github.io/post/interview/</link>
+      <pubDate>Tue, 23 Oct 2018 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/interview/</guid>
+      <description>&lt;p&gt;一些面试相关的东西，包括面试题目、技巧等。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Android Learning Roadmap</title>
+      <link>https://dinghmcn.github.io/post/androidlearningroadmap/</link>
+      <pubDate>Fri, 12 Oct 2018 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/androidlearningroadmap/</guid>
+      <description>Android 学习路线图 整理自[[https://www.diycode.cc/jerrysher][jerrysher]]的[[https://www</description>
+    </item>
+    
+    <item>
+      <title>PowerManagerService</title>
+      <link>https://dinghmcn.github.io/post/powermanagerservice/</link>
+      <pubDate>Sat, 25 Aug 2018 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/powermanagerservice/</guid>
+      <description>&lt;p&gt;会简单的介绍 &lt;code&gt;PowerManager&lt;/code&gt; ，重点会放在 &lt;code&gt;PoerManagerService&lt;/code&gt; 的源码分析上。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>WifiService</title>
+      <link>https://dinghmcn.github.io/post/wifiservice/</link>
+      <pubDate>Tue, 07 Aug 2018 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/wifiservice/</guid>
+      <description>&lt;p&gt;主要涉及怎样使用 &lt;code&gt;WifiManager&lt;/code&gt; 进行  wifi 相关操作；通过怎么获取 &lt;code&gt;WifiManager&lt;/code&gt; 及 &lt;code&gt;addNetwork&lt;/code&gt; 的调用过程来学习 &lt;code&gt;ADIL RPC&lt;/code&gt; 通信，但不涉及 &lt;code&gt;Binder IPC&lt;/code&gt; 通信。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Read the fucking Android source code</title>
+      <link>https://dinghmcn.github.io/post/readthefuckingandroidsourcecode/</link>
+      <pubDate>Mon, 06 Aug 2018 00:00:00 +0800</pubDate>
+      
+      <guid>https://dinghmcn.github.io/post/readthefuckingandroidsourcecode/</guid>
+      <description>&lt;style&gt;.org-center { margin-left: auto; margin-right: auto; text-align: center; }&lt;/style&gt;
+
+&lt;div class=&#34;org-center&#34;&gt;
+  &lt;div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;阅读  Android 源码记录，主要是  SystemServer 相关源码&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;/div&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
